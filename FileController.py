@@ -3,6 +3,11 @@ Created on Sat Apr 20 10:37:37 2019
 
 @author: Peng1104
 """
+import yaml
+import json
+import os
+import re
+from pathlib import Path
 
 #Versão do FileController
 __version__ = "1.0"
@@ -46,7 +51,7 @@ def JSONFileToYamlFile(JsonPath, YamlPath, save=False):
 		else:
 			File = YamlPath
 
-		File.data = JsonFileToDict(JsonPath)
+		File.data = JSONFileToDict(JsonPath)
 
 		if save:
 			File.save()
@@ -103,58 +108,8 @@ def YamlFileToJSONFile(YamlPath, JsonPath, save=False):
 	else:
 		raise TypeError("JsonPath precisa ser uma String com pelo menos 1 caractere ou um JSONFile e/ou save tem que ser um Booleano!")
 
-#Classe para criar e processar um YamlFile
-class YamlFile(FileController):
-	import yaml
-	import re
-
-	#Versão da classe YamlFile
-	__version__ = "1.0"
-
-	def __init__(self, FilePath):
-		FileController.__init__(self, FilePath)
-
-		#Verefica a versâo do PyYAML se é igual ou superior a 5.1
-		if re.search("^\d+(.\d+)?$", yaml.__version__) and float(yaml.__version__) < 5.1:
-			raise ImportError("ERRO! Não Foi possível achar o modulo PyYAML 5.1 ou superior")
-			
-
-	#Carrega os dados do arquivo
-	def reload(self):
-		with open(self.FilePath, 'r', encoding="utf-8") as file:
-			self.data = yaml.load(file.read(), Loader=yaml.FullLoader)
-
-	#Salva os dados para o arquivo
-	def save(self):
-		with open(self.FilePath, 'w', encoding="utf-8") as file:
-			file.write(yaml.dump(self.data, allow_unicode=True, default_flow_style=False, sort_keys=False))
-
-#Classe para criar e processar um JSONFile
-class JSONFile(FileController):
-	import json
-
-	#Versão da classe JSONFile
-	__version__ = "1.0"
-
-	def __init__(self, FilePath):
-		FileController.__init__(self, FilePath)
-
-	#Carrega os dados do arquivo
-	def reload(self):
-		with open(self.FilePath, 'r', encoding="utf-8") as file:
-			self.data = json.load(file)
-
-	#Salva os dados para o arquivo
-	def save(self):
-		with open(self.FilePath, 'w', encoding="utf-8") as file:
-			file.write(json.dumps(self.data, ensure_ascii=False, indent="\t"))
-
 #Classe pai para JSONFile e YamlFile
 class FileController:
-	import os
-	import re
-	from pathlib import Path
-
 	#Versão da classe FileController
 	__version__ = "1.0"
 
@@ -162,7 +117,7 @@ class FileController:
 
 	def __init__(self, FilePath):
 		#Verefica se FilePath é uma string
-		elif type(FilePath) != str:
+		if type(FilePath) != str:
 			raise TypeError("ERRO! FilePath deve ser uma String")
 		#Verefica se existe o caminho especificado pelo FilePath
 		elif Path(FilePath).exists():
@@ -445,3 +400,46 @@ class FileController:
 				return default_value
 		else:
 			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser um Dicionario!")
+
+#Classe para criar e processar um YamlFile
+class YamlFile(FileController):
+
+	#Versão da classe YamlFile
+	__version__ = "1.0"
+
+	def __init__(self, FilePath):
+		FileController.__init__(self, FilePath)
+
+		#Verefica a versâo do PyYAML se é igual ou superior a 5.1
+		if re.search("^\d+(.\d+)?$", yaml.__version__) and float(yaml.__version__) < 5.1:
+			raise ImportError("ERRO! Não Foi possível achar o modulo PyYAML 5.1 ou superior")
+			
+
+	#Carrega os dados do arquivo
+	def reload(self):
+		with open(self.FilePath, 'r', encoding="utf-8") as file:
+			self.data = yaml.load(file.read(), Loader=yaml.FullLoader)
+
+	#Salva os dados para o arquivo
+	def save(self):
+		with open(self.FilePath, 'w', encoding="utf-8") as file:
+			file.write(yaml.dump(self.data, allow_unicode=True, default_flow_style=False, sort_keys=False))
+
+#Classe para criar e processar um JSONFile
+class JSONFile(FileController):
+
+	#Versão da classe JSONFile
+	__version__ = "1.0"
+
+	def __init__(self, FilePath):
+		FileController.__init__(self, FilePath)
+
+	#Carrega os dados do arquivo
+	def reload(self):
+		with open(self.FilePath, 'r', encoding="utf-8") as file:
+			self.data = json.load(file)
+
+	#Salva os dados para o arquivo
+	def save(self):
+		with open(self.FilePath, 'w', encoding="utf-8") as file:
+			file.write(json.dumps(self.data, ensure_ascii=False, indent="\t"))
