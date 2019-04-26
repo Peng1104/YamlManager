@@ -8,8 +8,8 @@ Created on Sat Apr 20 10:37:37 2019
 __version__ = "1.0"
 
 #Coverte um dicionario em um JSONFile
-def DictToJSONFile(JsonPath, dicionario):
-	if ((type(JsonPath) == str and len(JsonPath) > 0) or type(JsonPath) == JSONFile) and type(dicionario) == dict:
+def DictToJSONFile(JsonPath, dicionario, save=False):
+	if ((type(JsonPath) == str and len(JsonPath) > 0) or type(JsonPath) == JSONFile) and type(dicionario) == dict and type(save) == bool:
 		File = None
 
 		if type(JsonPath) == str:
@@ -19,9 +19,12 @@ def DictToJSONFile(JsonPath, dicionario):
 
 		File.data = dicionario
 
+		if save:
+			File.save()
+
 		return File
 	else:
-		raise TypeError("JsonPath precisa ser uma String com pelo menos 1 caractere ou um JSONFile e/ou dicionario tem que ser um Dicionario!")
+		raise TypeError("JsonPath precisa ser uma String com pelo menos 1 caractere ou um JSONFile e/ou dicionario tem que ser um Dicionario e/ou save tem que ser um Booleano!")
 
 #Converte um arquivo JSON em um dicionario
 def JSONFileToDict(JsonPath):
@@ -53,8 +56,8 @@ def JSONFileToYamlFile(JsonPath, YamlPath, save=False):
 		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YamlFile e/ou save tem que ser um Booleano!")
 
 #Coverte um dicionario em um YamlFile
-def DictToYamlFile(YamlPath, dicionario):
-	if ((type(YamlPath) == str and len(YamlPath) > 0) or type(YamlPath) == YamlFile) and type(dicionario) == dict:
+def DictToYamlFile(YamlPath, dicionario, save=False):
+	if ((type(YamlPath) == str and len(YamlPath) > 0) or type(YamlPath) == YamlFile) and type(dicionario) == dict and type(save) == bool:
 		File = None
 
 		if type(YamlFile) == str:
@@ -62,11 +65,14 @@ def DictToYamlFile(YamlPath, dicionario):
 		else:
 			File = YamlPath
 
+		if save:
+			File.save()
+
 		File.data = dicionario
 
 		return File
 	else:
-		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YamlFile e/ou dicionario tem que ser um Dicionario!")
+		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YamlFile e/ou dicionario tem que ser um Dicionario e/ou save tem que ser um Booleano!")
 
 #Converte um arquivo YAML para um dicionario
 def YamlFileToDict(YamlPath):
