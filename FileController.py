@@ -11,10 +11,10 @@ from pathlib import Path
 from abc import ABC, abstractmethod
 
 #Versão do FileController
-__version__ = "1.2"
+__version__ = "1.2.1"
 
 #Coverte um dicionario em um JSONFile
-def dicionariooJSONFile(JsonPath, dicionario, save=False):
+def DictToJSONFile(JsonPath, dicionario, save=False):
 	if ((type(JsonPath) == str and len(JsonPath) > 0) or type(JsonPath) == JSONFile) and type(dicionario) == dict and type(save) == bool:
 		File = None
 
@@ -30,10 +30,10 @@ def dicionariooJSONFile(JsonPath, dicionario, save=False):
 
 		return File
 	else:
-		raise TypeError("JsonPath precisa ser uma String com pelo menos 1 caractere ou um JSONFile e/ou dicionario tem que ser um dicionario e/ou save tem que ser um Booleano!")
+		raise TypeError("JsonPath precisa ser uma String com pelo menos 1 caractere ou um JSONFile e/ou dicionario tem que ser um Dicionario e/ou save tem que ser um Booleano!")
 
 #Converte um arquivo JSON em um dicionario
-def JSONFileTodict(JsonPath):
+def JSONFileToDict(JsonPath):
 	if (type(JsonPath) == str and len(JsonPath) > 0) or type(JsonPath) == JSONFile:
 		if type(JsonPath) == str:
 			return JSONFile(JsonPath).data
@@ -52,7 +52,7 @@ def JSONFileToYamlFile(JsonPath, YamlPath, save=False):
 		else:
 			File = YamlPath
 
-		File.data = JSONFileTodict(JsonPath)
+		File.data = JSONFileToDict(JsonPath)
 
 		if save:
 			File.save()
@@ -62,7 +62,7 @@ def JSONFileToYamlFile(JsonPath, YamlPath, save=False):
 		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YamlFile e/ou save tem que ser um Booleano!")
 
 #Coverte um dicionario em um YamlFile
-def dicionariooYamlFile(YamlPath, dicionario, save=False):
+def DictToYamlFile(YamlPath, dicionario, save=False):
 	if ((type(YamlPath) == str and len(YamlPath) > 0) or type(YamlPath) == YamlFile) and type(dicionario) == dict and type(save) == bool:
 		File = None
 
@@ -78,10 +78,10 @@ def dicionariooYamlFile(YamlPath, dicionario, save=False):
 
 		return File
 	else:
-		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YamlFile e/ou dicionario tem que ser um dicionario e/ou save tem que ser um Booleano!")
+		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YamlFile e/ou dicionario tem que ser um Dicionario e/ou save tem que ser um Booleano!")
 
 #Converte um arquivo YAML para um dicionario
-def YamlFileTodict(YamlPath):
+def YamlFileToDict(YamlPath):
 	if (type(YamlPath) == str and len(YamlPath) > 0) or type(YamlPath) == YamlFile:
 		if type(YamlPath) == str:
 			return YamlFile(YamlPath).data
@@ -100,7 +100,7 @@ def YamlFileToJSONFile(YamlPath, JsonPath, save=False):
 		else:
 			File = JsonPath
 
-		File.data = YamlFileTodict(YamlPath)
+		File.data = YamlFileToDict(YamlPath)
 
 		if save:
 			File.save()
@@ -112,7 +112,7 @@ def YamlFileToJSONFile(YamlPath, JsonPath, save=False):
 #Classe pai para JSONFile e YamlFile
 class FileController(ABC):
 	#Versão da classe FileController
-	__version__ = "1.2"
+	__version__ = "1.2.1"
 
 	#FilePath = Localização do arquivo
 
@@ -139,6 +139,7 @@ class FileController(ABC):
 				raise IsADirectoryError("ERRO! " + FilePath + " é um diretório")
 		else:
 			#Cria as configurações inicias
+			super().__init__()
 			self.FilePath = FilePath
 			self.data = {}
 
@@ -194,7 +195,7 @@ class FileController(ABC):
 					#Verefica se tudo dentro da arvore foi apagado, apagando a arvore em seguinda
 					if len(dicionario[tree[0]]) == 0:
 						del dicionario[tree[0]]
-			#Adicionarioionar valor se o mesmo não for nulo
+			#Adicionar valor se o mesmo não for nulo
 			elif value != None:
 				if len(tree) == 1:
 					dicionario[tree[0]] = value
@@ -228,7 +229,7 @@ class FileController(ABC):
 				#Entra na proxima arvore de configuração interna
 				else:
 					return self.process_get(tree[1:], dicionario[tree[0]], default_value)
-			#Adicionarioiona nos dados o valor default se o mesmo existir
+			#Adiciona nos dados o valor default se o mesmo existir
 			elif default_value != None:
 				self.process_set(tree, dicionario, default_value)
 				return default_value
@@ -402,7 +403,7 @@ class FileController(ABC):
 		else:
 			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser uma Lista!")
 
-	#Pega um dicionario dentro dos dados
+	#Pega um Dicionario dentro dos dados
 	def getDict(self, path, default_value=None):
 		if type(path) == str and len(path) > 0 and (type(default_value) == dict or default_value == None):
 			tree = path.split(".")
@@ -415,7 +416,7 @@ class FileController(ABC):
 				self.set(path, default_value)
 				return default_value
 		else:
-			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser um dicionario!")
+			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser um Dicionario!")
 
 #Classe para criar e processar um YamlFile
 class YamlFile(FileController):
