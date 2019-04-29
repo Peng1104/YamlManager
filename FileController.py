@@ -365,7 +365,7 @@ class FileController(ABC):
 					if type(item) == int or type(item) == float or type(item) == bool:
 						lista.append(int(item))
 					else:
-						string = str(item):
+						string = str(item)
 
 						if re.search("^-?\d+(.\d+)?$", string):
 							lista.append(int(string))
