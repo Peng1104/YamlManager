@@ -8,12 +8,13 @@ import json
 import os
 import re
 from pathlib import Path
+from abc import ABC, abstractmethod
 
 #Versão do FileController
-__version__ = "1.0"
+__version__ = "1.2"
 
 #Coverte um dicionario em um JSONFile
-def DictToJSONFile(JsonPath, dicionario, save=False):
+def dicionariooJSONFile(JsonPath, dicionario, save=False):
 	if ((type(JsonPath) == str and len(JsonPath) > 0) or type(JsonPath) == JSONFile) and type(dicionario) == dict and type(save) == bool:
 		File = None
 
@@ -29,10 +30,10 @@ def DictToJSONFile(JsonPath, dicionario, save=False):
 
 		return File
 	else:
-		raise TypeError("JsonPath precisa ser uma String com pelo menos 1 caractere ou um JSONFile e/ou dicionario tem que ser um Dicionario e/ou save tem que ser um Booleano!")
+		raise TypeError("JsonPath precisa ser uma String com pelo menos 1 caractere ou um JSONFile e/ou dicionario tem que ser um dicionario e/ou save tem que ser um Booleano!")
 
 #Converte um arquivo JSON em um dicionario
-def JSONFileToDict(JsonPath):
+def JSONFileTodict(JsonPath):
 	if (type(JsonPath) == str and len(JsonPath) > 0) or type(JsonPath) == JSONFile:
 		if type(JsonPath) == str:
 			return JSONFile(JsonPath).data
@@ -51,7 +52,7 @@ def JSONFileToYamlFile(JsonPath, YamlPath, save=False):
 		else:
 			File = YamlPath
 
-		File.data = JSONFileToDict(JsonPath)
+		File.data = JSONFileTodict(JsonPath)
 
 		if save:
 			File.save()
@@ -61,7 +62,7 @@ def JSONFileToYamlFile(JsonPath, YamlPath, save=False):
 		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YamlFile e/ou save tem que ser um Booleano!")
 
 #Coverte um dicionario em um YamlFile
-def DictToYamlFile(YamlPath, dicionario, save=False):
+def dicionariooYamlFile(YamlPath, dicionario, save=False):
 	if ((type(YamlPath) == str and len(YamlPath) > 0) or type(YamlPath) == YamlFile) and type(dicionario) == dict and type(save) == bool:
 		File = None
 
@@ -77,10 +78,10 @@ def DictToYamlFile(YamlPath, dicionario, save=False):
 
 		return File
 	else:
-		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YamlFile e/ou dicionario tem que ser um Dicionario e/ou save tem que ser um Booleano!")
+		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YamlFile e/ou dicionario tem que ser um dicionario e/ou save tem que ser um Booleano!")
 
 #Converte um arquivo YAML para um dicionario
-def YamlFileToDict(YamlPath):
+def YamlFileTodict(YamlPath):
 	if (type(YamlPath) == str and len(YamlPath) > 0) or type(YamlPath) == YamlFile:
 		if type(YamlPath) == str:
 			return YamlFile(YamlPath).data
@@ -99,7 +100,7 @@ def YamlFileToJSONFile(YamlPath, JsonPath, save=False):
 		else:
 			File = JsonPath
 
-		File.data = YamlFileToDict(YamlPath)
+		File.data = YamlFileTodict(YamlPath)
 
 		if save:
 			File.save()
@@ -109,9 +110,9 @@ def YamlFileToJSONFile(YamlPath, JsonPath, save=False):
 		raise TypeError("JsonPath precisa ser uma String com pelo menos 1 caractere ou um JSONFile e/ou save tem que ser um Booleano!")
 
 #Classe pai para JSONFile e YamlFile
-class FileController:
+class FileController(ABC):
 	#Versão da classe FileController
-	__version__ = "1.0"
+	__version__ = "1.2"
 
 	#FilePath = Localização do arquivo
 
@@ -130,6 +131,7 @@ class FileController:
 					raise PermissionError("ERRO! Não é possivel editar o arquivo: " + FilePath)
 				else:
 					#Carrega as configurações inicias
+					super().__init__()
 					self.FilePath = FilePath
 					self.data = {}
 					self.reload()
@@ -140,13 +142,23 @@ class FileController:
 			self.FilePath = FilePath
 			self.data = {}
 
+	#Função a ser sobrescrita pela classe filha, com o objetivo de carregar dados de um arquivo para self.data
+	@abstractmethod
+	def reload(self):
+		pass
+
+	#Função a ser sobrescrita pela classe filha, com o objetivo de transferir os dados de self.data para um arquivo
+	@abstractmethod
+	def save(self):
+		pass
+
 	#Cria uma nova arvore de configuração - USO INTERNO
 	def createNew(self, tree, value):
 		if type(tree) == list and len(tree) > 0 and (type(value) == str or type(value) == list or type(value) == dict):
-			dic = {}
+			dicionario = {}
 
 			if len(tree) == 1:
-				dic[tree[0]] = value
+				dicionario[tree[0]] = value
 			else:
 				x = len(tree) - 2
 				new = {tree[-1] : value}
@@ -154,89 +166,80 @@ class FileController:
 				while x > 0:
 					new = {tree[x] : new}
 					x = x - 1
-				dic[tree[0]] = new
+				dicionario[tree[0]] = new
 
-			return dic
+			return dicionario
 		else:
 			raise TypeError("Tipo de tree e/ou value incorreto!")
 
 	#Processa o set - USO INTERNO
-	def process_set(self, tree, dic, value):
-		if type(tree) == list and len(tree) > 0 and type(dic) == dict and (type(value) == str or type(value) == list or type(value) == dict or value == None):
+	def process_set(self, tree, dicionario, value):
+		if type(tree) == list and len(tree) > 0 and type(dicionario) == dict and (type(value) == str or type(value) == list or type(value) == dict or value == None):
 			#Verefica se a existe a chave na arvore de configuração
-			if tree[0] in dic:
+			if tree[0] in dicionario:
 				#Verefica se é chave final
 				if len(tree) == 1:
 					#Verefica se key deve ser apagada
 					if value == None:
-						del dic[tree[0]]
+						del dicionario[tree[0]]
 					#Altera o valor
 					else:
-						dic[tree[0]] = value
+						dicionario[tree[0]] = value
 				#Verefica se continuação é uma arvore de configuração, se não cancela a operação
-				elif type(dic[tree[0]]) != dict:
-					return dic
+				elif type(dicionario[tree[0]]) != dict:
+					return dicionario
 				#Entra na proxima arvore de configuração interna
-				else:
-					dic[tree[0]] = self.process_set(tree[1:], dic[tree[0]], value)
+				else: 
+					dicionario[tree[0]] = self.process_set(tree[1:], dicionario[tree[0]], value)
 					#Verefica se tudo dentro da arvore foi apagado, apagando a arvore em seguinda
-					if len(dic[tree[0]]) == 0:
-						del dic[tree[0]]
-			#Adicionar valor se o mesmo não for nulo
+					if len(dicionario[tree[0]]) == 0:
+						del dicionario[tree[0]]
+			#Adicionarioionar valor se o mesmo não for nulo
 			elif value != None:
 				if len(tree) == 1:
-					dic[tree[0]] = value
+					dicionario[tree[0]] = value
 				else:
-					dic[tree[0]] = self.createNew(tree[1:], value)
-			return dic
+					dicionario[tree[0]] = self.createNew(tree[1:], value)
+			return dicionario
 		else:
-			raise TypeError("Tipo de tree e/ou value e/ou dic incorreto!")
+			raise TypeError("Tipo de tree e/ou value e/ou dicionario incorreto!")
 
-	#Seta/Altera valores na configuração
+	#Seta/Altera/Apaga valores na configuração
 	def set(self, path, value):
 		if type(path) == str and len(path) > 0:
 			tree = path.split(".")
 
 			#Se o value for nulo significa apagar um item na data
-			if value == None:
-				self.data = self.process_set(tree, self.data, None)
-			#Se o value for uma lista ou dicionario entra como tal
-			if type(value) == list or type(value) == dict:
-				self.data = self.process_set(tree, self.data, value)
-				#Garantir que tudo seja "string"
-				self.save()
-				self.load()
-			else:
-				self.data = self.process_set(tree, self.data, "{}".format(value))
+			self.data = self.process_set(tree, self.data, value)
 		else:
 			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere")
 
 	#Processa o get - USO INTERNO
-	def process_get(self, tree, dic, default_value):
-		if type(tree) == list and len(tree) > 0 and type(dic) == dict and (type(default_value) == str or type(default_value) == list or type(default_value) == dict or default_value == None):
+	def process_get(self, tree, dicionario, default_value):
+		if type(tree) == list and len(tree) > 0 and type(dicionario) == dict and (type(default_value) == str or type(default_value) == list or type(default_value) == dict or default_value == None):
 			#Verefica se a existe a chave na arvore de configuração
-			if tree[0] in dic:
+			if tree[0] in dicionario:
 				#Verefica se é a chave final e retorna a string 
 				if len(tree) == 1:
-					return dic[tree[0]]
+					return dicionario[tree[0]]
 				#Verefica se continuação é uma arvore de configuração, se não cancela a operação
-				elif type(dic[tree[0]]) != dict:
+				elif type(dicionario[tree[0]]) != dict:
 					return None
 				#Entra na proxima arvore de configuração interna
 				else:
-					return self.process_get(tree[1:], dic[tree[0]], default_value)
-			#Adiciona nos dados o valor default se o mesmo existir
+					return self.process_get(tree[1:], dicionario[tree[0]], default_value)
+			#Adicionarioiona nos dados o valor default se o mesmo existir
 			elif default_value != None:
-				self.process_set(tree, dic, default_value)
+				self.process_set(tree, dicionario, default_value)
 				return default_value
 		else:
-			raise TypeError("Tipo de tree e/ou default_value e/ou dic incorreto!")
+			raise TypeError("Tipo de tree e/ou default_value e/ou dicionario incorreto!")
 
 	#Pega uma String dentro dos dados
 	def getString(self, path, default_value=None):
 		if type(path) == str and len(path) > 0 and (type(default_value) == str or default_value == None):
 			tree = path.split(".")
-			return "{}".format(self.process_get(tree, self.data, default_value))
+			return str(self.process_get(tree, self.data, default_value))
 		else:
 			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser uma String!")
 
@@ -247,7 +250,7 @@ class FileController:
 
 			#Pega a sting dentro dos dados
 			if default_value != None:
-				string = self.getString(path, "{}".format(default_value))
+				string = self.getString(path, str(default_value))
 			else:
 				string = self.getString(path, None)
 
@@ -256,7 +259,7 @@ class FileController:
 				return float(string)
 			#Seta na localização o valor default se o mesmo existir
 			elif default_value != None:
-				self._set_(path, default_value)
+				self.set(path, default_value)
 				return float(default_value)
 		else:
 			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser um Numero!")
@@ -268,7 +271,7 @@ class FileController:
 
 			#Pega a sting dentro dos dados
 			if default_value != None:
-				string = self.getString(path, "{}".format(default_value))
+				string = self.getString(path, str(default_value))
 			else:
 				string = self.getString(path, None)
 
@@ -277,7 +280,7 @@ class FileController:
 				return float(string)
 			#Seta na localização o valor default se o mesmo existir
 			elif default_value != None:
-				self._set_(path, default_value)
+				self.set(path, default_value)
 				return default_value
 		else:
 			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser um Inteiro!")
@@ -289,7 +292,7 @@ class FileController:
 
 			#Pega a sting dentro dos dados
 			if default_value != None:
-				string = self.getString(path, "{}".format(default_value))
+				string = self.getString(path, str(default_value))
 			else:
 				string = self.getString(path, None)
 
@@ -308,11 +311,11 @@ class FileController:
 				result = []
 
 				for x in lista:
-					result.append("{}".format(x))
+					result.append(str(x))
 
 				return result
 			elif default_value != None:
-				self._set_(path, default_value)
+				self.set(path, default_value)
 				return default_value
 		else:
 			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser uma Lista!")
@@ -328,15 +331,20 @@ class FileController:
 				lista = []
 
 				#Transformando Strings em Floats
-				for string in result:
-					if re.search("^-?\d+(.\d+)?$", string):
-						lista.append(float(string))
+				for item in result:
+					if type(item) == float or type(item) == int or type(item) == bool:
+						lista.append(float(item))
 					else:
-						lista.append(0.0)
+						string = str(item)
+
+						if re.search("^-?\d+(.\d+)?$", string):
+							lista.append(float(string))
+						else:
+							lista.append(0.0)
 				return lista
 
 			elif default_value != None:
-				self._set_(path, default_value)
+				self.set(path, default_value)
 				return default_value
 		else:
 			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser uma Lista!")
@@ -352,15 +360,20 @@ class FileController:
 				lista = []
 
 				#Transformando Strings em Inteiros
-				for string in result:
-					if re.search("^-?\d+$", string):
-						lista.append(int(string))
+				for item in result:
+					if type(item) == int or type(item) == float or type(item) == bool:
+						lista.append(int(item))
 					else:
-						lista.append(0)
+						string = str(item):
+
+						if re.search("^-?\d+(.\d+)?$", string):
+							lista.append(int(string))
+						else:
+							lista.append(0)
 				return lista
 
 			elif default_value != None:
-				self._set_(path, default_value)
+				self.set(path, default_value)
 				return default_value
 		else:
 			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser uma Lista!")
@@ -376,17 +389,20 @@ class FileController:
 				lista = []
 
 				#Transformando Strings em Booleanos
-				for string in result:
-					lista.append(string.lower() == "true")
+				for item in result:
+					if type(item) == bool or type(item) == int or type(item) == float:
+						lista.append(bool(item))
+					else:
+						lista.append(str(item).lower() == "true")
 				return lista
 
 			elif default_value != None:
-				self._set_(path, default_value)
+				self.set(path, default_value)
 				return default_value
 		else:
 			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser uma Lista!")
 
-	#Pega um Dicionario dentro dos dados
+	#Pega um dicionario dentro dos dados
 	def getDict(self, path, default_value=None):
 		if type(path) == str and len(path) > 0 and (type(default_value) == dict or default_value == None):
 			tree = path.split(".")
@@ -396,24 +412,23 @@ class FileController:
 			if type(result) == dict:
 				return result
 			elif default_value != None:
-				self._set_(path, default_value)
+				self.set(path, default_value)
 				return default_value
 		else:
-			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser um Dicionario!")
+			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser um dicionario!")
 
 #Classe para criar e processar um YamlFile
 class YamlFile(FileController):
 
 	#Versão da classe YamlFile
-	__version__ = "1.0"
+	__version__ = "1.1"
 
 	def __init__(self, FilePath):
-		FileController.__init__(self, FilePath)
-
 		#Verefica a versâo do PyYAML se é igual ou superior a 5.1
 		if re.search("^\d+(.\d+)?$", yaml.__version__) and float(yaml.__version__) < 5.1:
 			raise ImportError("ERRO! Não Foi possível achar o modulo PyYAML 5.1 ou superior")
-			
+		else:
+			super().__init__(FilePath)
 
 	#Carrega os dados do arquivo
 	def reload(self):
@@ -429,10 +444,10 @@ class YamlFile(FileController):
 class JSONFile(FileController):
 
 	#Versão da classe JSONFile
-	__version__ = "1.0"
+	__version__ = "1.1"
 
 	def __init__(self, FilePath):
-		FileController.__init__(self, FilePath)
+		super().__init__(FilePath)
 
 	#Carrega os dados do arquivo
 	def reload(self):
