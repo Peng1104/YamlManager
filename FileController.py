@@ -11,7 +11,7 @@ from pathlib import Path
 from abc import ABC, abstractmethod
 
 #Versão do FileController
-__version__ = "1.2.1"
+__version__ = "1.2.2"
 
 #Coverte um dicionario em um JSONFile
 def DictToJSONFile(JsonPath, dicionario, save=False):
@@ -186,8 +186,9 @@ class FileController(ABC):
 					#Altera o valor
 					else:
 						dicionario[tree[0]] = value
-				#Verefica se continuação é uma arvore de configuração, se não cancela a operação
+				#Verefica se continuação é uma arvore de configuração, se cria uma arvore de configuração no local, sobrescrevendo os valores
 				elif type(dicionario[tree[0]]) != dict:
+					dicionario[tree[0]] = self.createNew(tree[1:], value)
 					return dicionario
 				#Entra na proxima arvore de configuração interna
 				else: 
@@ -225,6 +226,7 @@ class FileController(ABC):
 					return dicionario[tree[0]]
 				#Verefica se continuação é uma arvore de configuração, se não cancela a operação
 				elif type(dicionario[tree[0]]) != dict:
+					print("ERRO: {0} não é uma arvore de configuração".format(tree[0]))
 					return None
 				#Entra na proxima arvore de configuração interna
 				else:
@@ -422,7 +424,7 @@ class FileController(ABC):
 class YamlFile(FileController):
 
 	#Versão da classe YamlFile
-	__version__ = "1.1"
+	__version__ = "1.2"
 
 	def __init__(self, FilePath):
 		#Verefica a versâo do PyYAML se é igual ou superior a 5.1
@@ -445,7 +447,7 @@ class YamlFile(FileController):
 class JSONFile(FileController):
 
 	#Versão da classe JSONFile
-	__version__ = "1.1"
+	__version__ = "1.2"
 
 	def __init__(self, FilePath):
 		super().__init__(FilePath)
