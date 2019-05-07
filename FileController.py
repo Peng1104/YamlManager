@@ -424,7 +424,7 @@ class FileController(ABC):
 class YamlFile(FileController):
 
 	#Versão da classe YamlFile
-	__version__ = "1.2"
+	__version__ = "1.2.1"
 
 	def __init__(self, FilePath):
 		#Verefica a versâo do PyYAML se é igual ou superior a 5.1
@@ -440,6 +440,8 @@ class YamlFile(FileController):
 
 	#Salva os dados para o arquivo
 	def save(self):
+		if not Path(self.FilePath[:self.FilePath.rfind("/")]).exists():
+			os.makedirs(self.FilePath[:self.FilePath.rfind("/")], 666)
 		with open(self.FilePath, 'w', encoding="utf-8") as file:
 			file.write(yaml.dump(self.data, allow_unicode=True, default_flow_style=False, sort_keys=False))
 
@@ -447,7 +449,7 @@ class YamlFile(FileController):
 class JSONFile(FileController):
 
 	#Versão da classe JSONFile
-	__version__ = "1.2"
+	__version__ = "1.2.1"
 
 	def __init__(self, FilePath):
 		super().__init__(FilePath)
@@ -459,5 +461,7 @@ class JSONFile(FileController):
 
 	#Salva os dados para o arquivo
 	def save(self):
+		if not Path(self.FilePath[:self.FilePath.rfind("/")]).exists():
+			os.makedirs(self.FilePath[:self.FilePath.rfind("/")], 666)
 		with open(self.FilePath, 'w', encoding="utf-8") as file:
 			file.write(json.dumps(self.data, ensure_ascii=False, indent="\t"))
