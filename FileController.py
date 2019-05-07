@@ -280,11 +280,11 @@ class FileController(ABC):
 
 			#Verefica se a string é um inteiro
 			if re.search("^-?\d+$", string):
-				return float(string)
+				return int(string)
 			#Seta na localização o valor default se o mesmo existir
 			elif default_value != None:
 				self.set(path, default_value)
-				return default_value
+				return int(default_value)
 		else:
 			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser um Inteiro!")
 
