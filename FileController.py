@@ -42,13 +42,13 @@ def JSONFileToDict(JsonPath):
 	else:
 		raise TypeError("JsonPath precisa ser uma String com pelo menos 1 caractere ou um JSONFile!")
 
-#Converte um arquivo JSON em um arquivo YAML (retorna um novo YamlFile)
-def JSONFileToYamlFile(JsonPath, YamlPath, save=False):
-	if ((type(YamlPath) == str and len(YamlPath) > 0) or type(YamlPath) == YamlFile) and type(save) == bool:
+#Converte um arquivo JSON em um arquivo YAML (retorna um novo YAMLFile)
+def JSONFileToYAMLFile(JsonPath, YamlPath, save=False):
+	if ((type(YamlPath) == str and len(YamlPath) > 0) or type(YamlPath) == YAMLFile) and type(save) == bool:
 		File = None
 
 		if type(YamlPath) == str:
-			File = YamlFile(YamlPath)
+			File = YAMLFile(YamlPath)
 		else:
 			File = YamlPath
 
@@ -59,15 +59,15 @@ def JSONFileToYamlFile(JsonPath, YamlPath, save=False):
 
 		return File
 	else:
-		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YamlFile e/ou save tem que ser um Booleano!")
+		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YAMLFile e/ou save tem que ser um Booleano!")
 
-#Coverte um dicionario em um YamlFile
-def DictToYamlFile(YamlPath, dicionario, save=False):
-	if ((type(YamlPath) == str and len(YamlPath) > 0) or type(YamlPath) == YamlFile) and type(dicionario) == dict and type(save) == bool:
+#Coverte um dicionario em um YAMLFile
+def DictToYAMLFile(YamlPath, dicionario, save=False):
+	if ((type(YamlPath) == str and len(YamlPath) > 0) or type(YamlPath) == YAMLFile) and type(dicionario) == dict and type(save) == bool:
 		File = None
 
-		if type(YamlFile) == str:
-			File = YamlFile(YamlPath)
+		if type(YAMLFile) == str:
+			File = YAMLFile(YamlPath)
 		else:
 			File = YamlPath
 
@@ -78,20 +78,20 @@ def DictToYamlFile(YamlPath, dicionario, save=False):
 
 		return File
 	else:
-		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YamlFile e/ou dicionario tem que ser um Dicionario e/ou save tem que ser um Booleano!")
+		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YAMLFile e/ou dicionario tem que ser um Dicionario e/ou save tem que ser um Booleano!")
 
 #Converte um arquivo YAML para um dicionario
-def YamlFileToDict(YamlPath):
-	if (type(YamlPath) == str and len(YamlPath) > 0) or type(YamlPath) == YamlFile:
+def YAMLFileToDict(YamlPath):
+	if (type(YamlPath) == str and len(YamlPath) > 0) or type(YamlPath) == YAMLFile:
 		if type(YamlPath) == str:
-			return YamlFile(YamlPath).data
+			return YAMLFile(YamlPath).data
 		else:
 			return YamlPath.data
 	else:
-		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YamlFile!")
+		raise TypeError("YamlPath precisa ser uma String com pelo menos 1 caractere ou um YAMLFile!")
 
 #Converte um arquivo YAML para um arquivo JSON (retorna um novo JSONFile)
-def YamlFileToJSONFile(YamlPath, JsonPath, save=False):
+def YAMLFileToJSONFile(YamlPath, JsonPath, save=False):
 	if ((type(JsonPath) == str and len(JsonPath) > 0) or type(JsonPath) == JSONFile) and type(save) == bool:
 		File = None
 
@@ -100,7 +100,7 @@ def YamlFileToJSONFile(YamlPath, JsonPath, save=False):
 		else:
 			File = JsonPath
 
-		File.data = YamlFileToDict(YamlPath)
+		File.data = YAMLFileToDict(YamlPath)
 
 		if save:
 			File.save()
@@ -109,7 +109,7 @@ def YamlFileToJSONFile(YamlPath, JsonPath, save=False):
 	else:
 		raise TypeError("JsonPath precisa ser uma String com pelo menos 1 caractere ou um JSONFile e/ou save tem que ser um Booleano!")
 
-#Classe pai para JSONFile e YamlFile
+#Classe pai para JSONFile e YAMLFile
 class FileController(ABC):
 	#Versão da classe FileController
 	__version__ = "1.2.2"
@@ -420,10 +420,10 @@ class FileController(ABC):
 		else:
 			raise TypeError("Path precisa ser uma String com pelo menos 1 caractere e/ou default_value tem que ser um Dicionario!")
 
-#Classe para criar e processar um YamlFile
-class YamlFile(FileController):
+#Classe para criar e processar um YAMLFile
+class YAMLFile(FileController):
 
-	#Versão da classe YamlFile
+	#Versão da classe YAMLFile
 	__version__ = "1.2.1"
 
 	def __init__(self, FilePath):
@@ -440,8 +440,10 @@ class YamlFile(FileController):
 
 	#Salva os dados para o arquivo
 	def save(self):
-		if not Path(self.FilePath[:self.FilePath.rfind("/")]).exists():
-			os.makedirs(self.FilePath[:self.FilePath.rfind("/")], 666)
+		i = self.FilePath.rfind("/")
+
+		if i > -1 and not Path(self.FilePath[:i]).exists():
+			os.makedirs(self.FilePath[:i], 666)
 		with open(self.FilePath, 'w', encoding="utf-8") as file:
 			file.write(yaml.dump(self.data, allow_unicode=True, default_flow_style=False, sort_keys=False))
 
@@ -461,7 +463,9 @@ class JSONFile(FileController):
 
 	#Salva os dados para o arquivo
 	def save(self):
-		if not Path(self.FilePath[:self.FilePath.rfind("/")]).exists():
-			os.makedirs(self.FilePath[:self.FilePath.rfind("/")], 666)
+		i = self.FilePath.rfind("/")
+
+		if i > -1 and not Path(self.FilePath[:i]).exists():
+			os.makedirs(self.FilePath[:i], 666)
 		with open(self.FilePath, 'w', encoding="utf-8") as file:
 			file.write(json.dumps(self.data, ensure_ascii=False, indent="\t"))
