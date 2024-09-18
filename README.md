@@ -63,6 +63,3 @@ Biblioteca que controla e cria arquivos JSON e YAML
 * __YamlFile__
 * __JSONFile__
 * __FileController__
-
-### YamlFile - **!!!ATENÇÃO!!!**
-o YamlFile somente funciona no PyYAML 5.1 ou superior!!
