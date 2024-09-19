@@ -27,7 +27,7 @@ jobs:
         pip install pylint build
     - name: Run pylint
       run: |
-        pylint .\setup.py .\yaml_manager\
+        pylint setup.py yaml_manager\
     - name: Build package
       run: python -m build
     - name: Upload release to PyPI
