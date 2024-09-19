@@ -25,8 +25,7 @@ classifiers = [
 urls.changelog = "https://github.com/Peng1104/YamlManager/releases/latest"
 urls.issues = "https://github.com/Peng1104/YamlManager/issues"
 urls.source = "https://github.com/Peng1104/YamlManager"
-# Version read from __version__ field in __init__.py by Flit
-dynamic = ["version"]
+version = "1.2.3"
 dependencies = [
   "PyYAML >= 5.1",
 ]
