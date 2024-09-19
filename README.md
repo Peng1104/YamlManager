@@ -80,20 +80,20 @@ Library to simplify the management and creation of JSON and YAML files.
   - `save()`: Saves the current data to the JSON file.
 
 ### FileController
-- **Descrição:**
-  - Representa um controlador de arquivos abstrato e fornece métodos para manipular dados de arquivos.
-- **Métodos:**
-  - `__init__(file_path: str)`: Inicializa a instância de `FileController` com o caminho do arquivo.
-  - `reload()`: Método abstrato para carregar dados do arquivo. Deve ser implementado pelas subclasses.
-  - `save()`: Método abstrato para salvar dados no arquivo. Deve ser implementado pelas subclasses.
-  - `contains(key: str) -> bool`: Verifica se uma chave existe no dicionário de dados.
-  - `set(key: str, value: any) -> None`: Define, modifica ou exclui valores na configuração.
-  - `string(key: str, default_value: str | None = None) -> str | None`: Obtém um valor de string dos dados.
-  - `float(key: str, default_value: float | int | None = None) -> float | None`: Obtém um valor de ponto flutuante dos dados.
-  - `int(key: str, default_value: int | None = None) -> int | None`: Obtém um valor inteiro dos dados.
-  - `boolean(key: str, default_value: bool | None = None) -> bool | None`: Obtém um valor booleano dos dados.
-  - `string_list(key: str, default_value: list[str] | None = None) -> list[str] | None`: Obtém uma lista de strings dos dados.
-  - `float_list(key: str, default_value: list[float | int] | None = None) -> list[float] | None`: Obtém uma lista de valores de ponto flutuante dos dados.
-  - `int_list(key: str, default_value: list[int | float] | None = None) -> list[int] | None`: Obtém uma lista de valores inteiros dos dados.
-  - `bool_list(key: str, default_value: list[bool] | None = None) -> list[bool] | None`: Obtém uma lista de valores booleanos dos dados.
-  - `dictionary(key: str, default_value: dict | None = None) -> dict | None`: Obtém um dicionário dos dados.
+- **Description:**
+  - Represents an abstract file controller and provides methods to manipulate file data.
+- **Methods:**
+  - `__init__(file_path: str)`: Initializes the `FileController` instance with the file path.
+  - `reload()`: Abstract method to load data from the file. Must be implemented by subclasses.
+  - `save()`: Abstract method to save data to the file. Must be implemented by subclasses.
+  - `contains(key: str) -> bool`: Checks if a key exists in the data dictionary.
+  - `set(key: str, value: any) -> None`: Sets, modifies, or deletes values in the configuration.
+  - `string(key: str, default_value: str | None = None) -> str | None`: Gets a string value from the data.
+  - `float(key: str, default_value: float | int | None = None) -> float | None`: Gets a float value from the data.
+  - `int(key: str, default_value: int | None = None) -> int | None`: Gets an integer value from the data.
+  - `boolean(key: str, default_value: bool | None = None) -> bool | None`: Gets a boolean value from the data.
+  - `str_list(key: str, default_value: list[str] | None = None) -> list[str] | None`: Gets a list of strings from the data.
+  - `float_list(key: str, default_value: list[float | int] | None = None) -> list[float] | None`: Gets a list of float values from the data.
+  - `int_list(key: str, default_value: list[int | float] | None = None) -> list[int] | None`: Gets a list of integer values from the data.
+  - `bool_list(key: str, default_value: list[bool] | None = None) -> list[bool] | None`: Gets a list of boolean values from the data.
+  - `dictionary(key: str, default_value: dict | None = None) -> dict | None`: Gets a dictionary from the data.

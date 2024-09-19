@@ -2,6 +2,7 @@
 This module provides functionalities to manage YAML and JSON files.
 """
 
+from .file_controller import FileController
 from .json_file import JSONFile
 from .yaml_file import YAMLFile
 
