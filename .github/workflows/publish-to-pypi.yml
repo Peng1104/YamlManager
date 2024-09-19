@@ -1,0 +1,57 @@
+# This workflow will upload a Python Package to PyPI using Flit and Trusted Publishers
+# For more information see: https://docs.pypi.org/trusted-publishers/
+
+name: Upload Python Package to PyPI
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  dist:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install flit PyYAML pylint
+      
+      - name: Run pylint
+        run: |
+          pylint yaml_manager/
+
+      - name: Build package using Flit
+        run: |
+          flit build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist
+          path: dist/
+
+  publish:
+    needs: [dist]
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist
+
+      - name: Publish to PyPI (Trusted Publisher)
+        uses: pypa/gh-action-pypi-publish@release/v1
