@@ -29,7 +29,7 @@ class FileController(ABC):
         Dictionary holding the data loaded from the file.
     """
 
-    __version__ = "1.2.2"
+    __version__ = "1.2.3"
 
     def __init__(self, file_path: str) -> None:
         """

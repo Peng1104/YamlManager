@@ -29,7 +29,7 @@ class YAMLFile(FileController):
         A dictionary containing the data loaded from the YAML file.
     """
 
-    __version__ = "1.2.2"
+    __version__ = "1.2.3"
 
     def reload(self) -> None:
         """

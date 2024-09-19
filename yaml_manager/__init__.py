@@ -7,7 +7,7 @@ from .json_file import JSONFile
 from .yaml_file import YAMLFile
 
 # Version of FileController
-__version__ = "1.2.2"
+__version__ = "1.2.3"
 
 
 def to_json_file(path: str | JSONFile, dictionary: dict, save: bool = False) -> JSONFile:
