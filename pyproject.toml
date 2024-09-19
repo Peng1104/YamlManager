@@ -1,6 +1,6 @@
 [build-system]
-requires = ["flit-core", "PyYAML>=5.1"]
-build-backend = "flit_core.buildapi"
+requires = ["setuptools", "wheel", "PyYAML>=5.1"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "YamlManager"
