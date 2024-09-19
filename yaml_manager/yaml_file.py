@@ -1,7 +1,17 @@
-from .file_controller import FileController
+"""
+yaml_file.py
+
+This module provides the YAMLFile class for managing YAML file read and write operations.
+
+Classes:
+    YAMLFile: Extends FileController to handle YAML file operations.
+"""
+
 from pathlib import Path
-import yaml
 import os
+import yaml
+
+from .file_controller import FileController
 
 
 class YAMLFile(FileController):
@@ -21,26 +31,6 @@ class YAMLFile(FileController):
 
     __version__ = "1.2.1"
 
-    def __init__(self, file_path: str) -> None:
-        """
-        Initializes the `YAMLFile` instance.
-
-        Parameters
-        ----------
-        file_path : str
-            The path to the YAML file to be managed.
-
-        Raises
-        ------
-        TypeError
-            If `file_path` is not a string.
-        IsADirectoryError
-            If `file_path` points to a directory instead of a file.
-        PermissionError
-            If the file lacks read or write permissions.
-        """
-        super().__init__(file_path)
-
     def reload(self) -> None:
         """
         Loads the data from the YAML file into `self.data`.
@@ -56,7 +46,7 @@ class YAMLFile(FileController):
             If the file does not exist.
         """
         with open(self.file_path, 'r', encoding="utf-8") as file:
-            self._data = yaml.load(file.read(), Loader=yaml.FullLoader)
+            self.data = yaml.load(file.read(), Loader=yaml.FullLoader)
 
     def save(self) -> None:
         """
@@ -76,5 +66,5 @@ class YAMLFile(FileController):
             os.makedirs(self.file_path[:i], 0o666)
 
         with open(self.file_path, 'w', encoding="utf-8") as file:
-            file.write(yaml.dump(self._data, indent=2,
+            file.write(yaml.dump(self.data, indent=2,
                        allow_unicode=True, encoding="utf-8", sort_keys=False))

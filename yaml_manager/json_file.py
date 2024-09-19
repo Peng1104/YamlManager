@@ -1,7 +1,17 @@
-from .file_controller import FileController
+"""
+json_file.py
+
+This module provides the JSONFile class for managing JSON file read and write operations.
+
+Classes:
+    JSONFile: Extends FileController to handle JSON file operations.
+"""
+
 from pathlib import Path
 import os
 import json
+
+from .file_controller import FileController
 
 
 class JSONFile(FileController):
@@ -21,27 +31,6 @@ class JSONFile(FileController):
 
     __version__ = "1.2.1"
 
-    def __init__(self, file_path: str) -> None:
-        """
-        Initializes the `JSONFile` instance.
-
-        Parameters
-        ----------
-        file_path : str
-            The path to the JSON file to be managed.
-
-        Raises
-        ------
-        TypeError
-            If `file_path` is not a string.
-        IsADirectoryError
-            If `file_path` points to a directory instead of a file.
-        PermissionError
-            If the file lacks read or write permissions.
-        """
-
-        super().__init__(file_path)
-
     def reload(self) -> None:
         """
         Loads the data from the JSON file into `self.data`.
@@ -57,7 +46,7 @@ class JSONFile(FileController):
             If the file does not exist.
         """
         with open(self.file_path, 'r', encoding="utf-8") as file:
-            self._data = json.load(file)
+            self.data = json.load(file)
 
     def save(self) -> None:
         """
@@ -77,5 +66,5 @@ class JSONFile(FileController):
             os.makedirs(self.file_path[:i], 0o666)
 
         with open(self.file_path, 'w', encoding="utf-8") as file:
-            file.write(json.dumps(self._data, ensure_ascii=False,
+            file.write(json.dumps(self.data, ensure_ascii=False,
                        allow_nan=False, indent="\t"))

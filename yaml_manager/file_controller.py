@@ -1,3 +1,12 @@
+"""
+file_controller.py
+
+This module provides the FileController abstract base class for managing file operations.
+
+Classes:
+    FileController: An abstract base class to handle common file operations.
+"""
+
 from abc import ABC, abstractmethod
 from pathlib import Path
 import os
@@ -40,44 +49,39 @@ class FileController(ABC):
         PermissionError
             If the file lacks read or write permissions.
         """
+        self.file_path = file_path
+        self.data = {}
+
         if not isinstance(file_path, str):
             raise TypeError("File_path needs to be a string")
 
-        elif Path(file_path).exists():
+        if Path(file_path).exists():
             if Path(file_path).is_file():
 
                 if not os.access(file_path, os.R_OK):
                     raise PermissionError(f"Cannot read file: {file_path}")
 
-                elif not os.access(file_path, os.W_OK):
+                if not os.access(file_path, os.W_OK):
                     raise PermissionError(f"Cannot write to file: {file_path}")
 
-                else:
-                    self.file_path = file_path
-                    self._data = {}
+                self.reload()
 
-                    self.reload()
             else:
                 raise IsADirectoryError(f"{file_path} is not a file")
-        else:
-            self.file_path = file_path
-            self._data = {}
 
     @abstractmethod
     def reload(self):
         """
-        Abstract method for loading data from the file into `self._data`.
+        Abstract method for loading data from the file into `self.data`.
         Must be implemented by subclasses.
         """
-        pass
 
     @abstractmethod
     def save(self):
         """
-        Abstract method for saving `self._data` to the file.
+        Abstract method for saving `self.data` to the file.
         Must be implemented by subclasses.
         """
-        pass
 
     def contains(self, key: str) -> bool:
         """
@@ -93,7 +97,7 @@ class FileController(ABC):
         bool
             True if the key exists in the dictionary, False otherwise.
         """
-        return key in self._data
+        return key in self.data
 
     def set(self, key: str, value: any) -> None:
         """
@@ -149,7 +153,7 @@ class FileController(ABC):
 
         return None
 
-    def float(self, key: str, default_value: float | int | None = None) -> float | None:
+    def float(self, key: string, default_value: float | int | None = None) -> float | None:
         """
         Gets a float value from the data.
 
@@ -183,13 +187,13 @@ class FileController(ABC):
         if re.search(r"^-?\d+(\.\d+)?$", string):
             return float(string)
 
-        elif default_value is not None:
+        if default_value is not None:
             self.set(key, default_value)
             return float(default_value)
 
         return None
 
-    def int(self, key: str, default_value: int | None = None) -> int | None:
+    def int(self, key: string, default_value: int | None = None) -> int | None:
         """
         Gets an integer value from the data.
 
@@ -223,13 +227,13 @@ class FileController(ABC):
         if re.search(r"^-?\d+$", string):
             return int(string)
 
-        elif default_value is not None:
+        if default_value is not None:
             self.set(key, default_value)
             return int(default_value)
 
         return None
 
-    def boolean(self, key: str, default_value: bool | None = None) -> bool | None:
+    def boolean(self, key: string, default_value: bool | None = None) -> bool | None:
         """
         Gets a boolean value from the data.
 
@@ -262,7 +266,8 @@ class FileController(ABC):
 
         return string.lower() == "true"
 
-    def string_list(self, key: str, default_value: list[str] | None = None) -> list[str] | None:
+    def str_list(self, key: string,
+                 default_value: list[string] | None = None) -> list[string] | None:
         """
         Gets a list of strings from the data.
 
@@ -276,7 +281,8 @@ class FileController(ABC):
         Returns
         -------
         list of str
-            The list of string values associated with the given key key, or `None` if the key is not found.
+            The list of string values associated with the given key key,
+              or `None` if the key is not found.
 
         Raises
         ------
@@ -292,13 +298,14 @@ class FileController(ABC):
         if isinstance(lista, list):
             return [str(x) for x in lista]
 
-        elif default_value is not None:
+        if default_value is not None:
             self.set(key, default_value)
             return default_value
 
         return None
 
-    def float_list(self, key: str, default_value: list[float | int] | None = None) -> list[float] | None:
+    def float_list(self, key: str,
+                   default_value: list[float | int] | None = None) -> list[float] | None:
         """
         Gets a list of floats from the data.
 
@@ -312,7 +319,8 @@ class FileController(ABC):
         Returns
         -------
         list of float
-            The list of float values associated with the given key key, or `None` if the key is not found.
+            The list of float values associated with the given key key,
+              or `None` if the key is not found.
 
         Raises
         ------
@@ -344,19 +352,20 @@ class FileController(ABC):
 
             return float_list
 
-        elif default_value is not None:
+        if default_value is not None:
             self.set(key, default_value)
             return default_value
 
         return None
 
-    def int_list(self, key: str, default_value: list[int | float] | None = None) -> list[int] | None:
+    def int_list(self, key: string,
+                 default_value: list[int | float] | None = None) -> list[int] | None:
         """
         Retrieves a list of integers from the data.
 
         This method processes the provided key to get a list of integers from the configuration.
-        If the values are not integers, they will be converted when possible. If the value is not found, 
-        the `default_value` will be returned or set.
+        If the values are not integers, they will be converted when possible.
+        If the value is not found, the `default_value` will be returned or set.
 
         Parameters
         ----------
@@ -379,7 +388,7 @@ class FileController(ABC):
             raise TypeError(
                 "Key must be a non-empty string, and default_value must be a list of numbers.")
 
-        entry = self.__handle_get(key.split("."), self._data, default_value)
+        entry = self.__handle_get(key.split("."), self.data, default_value)
 
         if isinstance(entry, list):
             int_list = []
@@ -399,13 +408,13 @@ class FileController(ABC):
 
             return int_list
 
-        elif default_value is not None:
+        if default_value is not None:
             self.set(key, default_value)
             return default_value
 
         return None
 
-    def bool_list(self, key: str, default_value: list[bool] | None = None) -> list[bool] | None:
+    def bool_list(self, key: string, default_value: list[bool] | None = None) -> list[bool] | None:
         """
         Retrieves a list of booleans from the data.
 
@@ -433,7 +442,7 @@ class FileController(ABC):
             raise TypeError(
                 "Key must be a non-empty string, and default_value must be a list.")
 
-        entry = self.__handle_get(key.split("."), self._data, default_value)
+        entry = self.__handle_get(key.split("."), self.data, default_value)
 
         if isinstance(entry, list):
             bool_list = []
@@ -448,13 +457,14 @@ class FileController(ABC):
 
             return bool_list
 
-        elif default_value is not None:
+        if default_value is not None:
+
             self.set(key, default_value)
             return default_value
 
         return None
 
-    def dictionary(self, key: str, default_value: dict | None = None) -> dict | None:
+    def dictionary(self, key: string, default_value: dict | None = None) -> dict | None:
         """
         Retrieves a dictionary from the data.
 
@@ -482,18 +492,21 @@ class FileController(ABC):
             raise TypeError(
                 "Key must be a non-empty string, and default_value must be a dictionary.")
 
-        result = self.__handle_get(key.split("."), self._data, default_value)
+        result = self.__handle_get(key.split("."), self.data, default_value)
 
         if isinstance(result, dict):
             return result
 
-        elif default_value is not None:
+        if default_value is not None:
+
             self.set(key, default_value)
             return default_value
 
         return None
 
-    def __validate_key_and_default(self, key: str, default_value: any, expected_type: type | tuple[type, type]) -> bool:
+    def __validate_key_and_default(self, key: string,
+                                   default_value: any,
+                                   expected_type: type | tuple[type, type]) -> bool:
         """
         Validates the key and default value.
 
@@ -511,7 +524,8 @@ class FileController(ABC):
         bool
             True if the key and default value are valid, False otherwise.
         """
-        return isinstance(key, str) and len(key) > 0 and (isinstance(default_value, expected_type) or default_value is None)
+        return (isinstance(key, str) and len(key) > 0 and
+                (isinstance(default_value, expected_type) or default_value is None))
 
     def __generete_new_tree(self, parent: list, value: any) -> dict:
         """
@@ -563,10 +577,14 @@ class FileController(ABC):
             The updated dictionary.
         """
         if tree[0] in dictionary:
+
             dictionary[tree[0]] = self.__update_existing_key(
                 tree, dictionary, value)
+
         elif value is not None:
+
             dictionary[tree[0]] = self.__create_new_key(tree, value)
+
         return dictionary
 
     def __update_existing_key(self, tree: list, dictionary: dict, value: any) -> any:
@@ -595,17 +613,16 @@ class FileController(ABC):
         if len(tree) == 1:
             return value if value is not None else dictionary.pop(tree[0])
 
-        elif not isinstance(dictionary[tree[0]], dict):
+        if not isinstance(dictionary[tree[0]], dict):
             return self.__generete_new_tree(tree[1:], value)
 
-        else:
-            dictionary[tree[0]] = self.__update_dict(
-                tree[1:], dictionary[tree[0]], value)
+        dictionary[tree[0]] = self.__update_dict(
+            tree[1:], dictionary[tree[0]], value)
 
-            if len(dictionary[tree[0]]) == 0:
-                del dictionary[tree[0]]
+        if len(dictionary[tree[0]]) == 0:
+            del dictionary[tree[0]]
 
-            return dictionary[tree[0]]
+        return dictionary[tree[0]]
 
     def __create_new_key(self, tree: list, value: any) -> any:
         """
@@ -628,10 +645,12 @@ class FileController(ABC):
         """
         if len(tree) == 1:
             return value
-        else:
-            return self.__generete_new_tree(tree[1:], value)
 
-    def __handle_get(self, tree: list[str], dictionary: dict, default_value: any | None) -> any | None:
+        return self.__generete_new_tree(tree[1:], value)
+
+    def __handle_get(self, tree: list[string],
+                     dictionary: dict,
+                     default_value: any | None) -> any | None:
         """
         Internal method to process getting values from the configuration.
 
@@ -653,16 +672,14 @@ class FileController(ABC):
             if len(tree) == 1:
                 return dictionary[tree[0]]
 
-            elif not isinstance(dictionary[tree[0]], dict):
+            if not isinstance(dictionary[tree[0]], dict):
                 print(f"ERROR: {tree[0]} is not a configuration tree.")
                 return None
 
-            else:
-                return self.__handle_get(tree[1:], dictionary[tree[0]], default_value)
+            return self.__handle_get(tree[1:], dictionary[tree[0]], default_value)
 
-        elif default_value is not None:
+        if default_value is not None:
             self.__update_dict(tree, dictionary, default_value)
             return default_value
 
-        else:
-            return None
+        return None
