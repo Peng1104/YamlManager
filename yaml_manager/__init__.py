@@ -2,15 +2,20 @@
 This module provides functionalities to manage YAML and JSON files.
 """
 
-from .file_controller import FileController
-from .json_file import JSONFile
-from .yaml_file import YAMLFile
+from typing import Union
+from yaml_manager.file_controller import FileController
+from yaml_manager.json_file import JSONFile
+from yaml_manager.yaml_file import YAMLFile
 
 # Version of FileController
-__version__ = "1.2.3"
+__version__ = "1.2.4"
 
 
-def to_json_file(path: str | JSONFile, dictionary: dict, save: bool = False) -> JSONFile:
+def to_json_file(
+    path: Union[str, JSONFile],
+    dictionary: dict,
+    save: bool = False
+) -> JSONFile:
     """
     Converts a dictionary into a JSONFile.
 
@@ -58,7 +63,7 @@ def to_json_file(path: str | JSONFile, dictionary: dict, save: bool = False) -> 
     return file
 
 
-def json_file_to_dict(json_path: str | JSONFile) -> dict:
+def json_file_to_dict(json_path: Union[str, JSONFile]) -> dict:
     """
     Converts a JSON file into a dictionary.
 
@@ -88,8 +93,11 @@ def json_file_to_dict(json_path: str | JSONFile) -> dict:
     return json_path.data
 
 
-def json_file_to_yaml_file(json_path: str | JSONFile,
-                           yaml_path: str | YAMLFile, save: bool = False) -> YAMLFile:
+def json_file_to_yaml_file(
+    json_path: Union[str, JSONFile],
+    yaml_path: Union[str, YAMLFile],
+    save: bool = False
+) -> YAMLFile:
     """
     Converts a JSON file into a YAML file and returns a new `YAMLFile` object.
 
@@ -137,7 +145,11 @@ def json_file_to_yaml_file(json_path: str | JSONFile,
     return file
 
 
-def to_yaml_file(yaml_path: str | YAMLFile, dictionary: dict, save: bool = False) -> YAMLFile:
+def to_yaml_file(
+    yaml_path: Union[str, YAMLFile],
+    dictionary: dict,
+    save: bool = False
+) -> YAMLFile:
     """
     Converts a dictionary into a YAMLFile object.
 
@@ -184,7 +196,7 @@ def to_yaml_file(yaml_path: str | YAMLFile, dictionary: dict, save: bool = False
     return file
 
 
-def yaml_file_to_dict(yaml_path: str | YAMLFile) -> dict:
+def yaml_file_to_dict(yaml_path: Union[str, YAMLFile]) -> dict:
     """
     Converts a YAML file into a dictionary.
 
@@ -214,8 +226,11 @@ def yaml_file_to_dict(yaml_path: str | YAMLFile) -> dict:
     return yaml_path.data
 
 
-def yaml_file_to_json_file(yaml_path: str | YAMLFile,
-                           json_path: str | JSONFile, save: bool = False) -> JSONFile:
+def yaml_file_to_json_file(
+    yaml_path: Union[str, YAMLFile],
+    json_path: Union[str, JSONFile],
+    save: bool = False
+) -> JSONFile:
     """
     Converts a YAML file into a JSON file and returns a new `JSONFile` object.
 

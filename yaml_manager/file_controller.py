@@ -7,6 +7,7 @@ Classes:
     FileController: An abstract base class to handle common file operations.
 """
 
+from typing import Union
 from abc import ABC, abstractmethod
 from pathlib import Path
 import os
@@ -29,7 +30,7 @@ class FileController(ABC):
         Dictionary holding the data loaded from the file.
     """
 
-    __version__ = "1.2.3"
+    __version__ = "1.2.4"
 
     def __init__(self, file_path: str) -> None:
         """
@@ -120,7 +121,11 @@ class FileController(ABC):
         else:
             raise TypeError("Key must be a non-empty string.")
 
-    def string(self, key: str, default_value: str | None = None) -> str | None:
+    def string(
+        self,
+        key: str,
+        default_value: Union[str, None] = None
+    ) -> Union[str , None]:
         """
         Gets a string value from the data.
 
@@ -153,7 +158,11 @@ class FileController(ABC):
 
         return None
 
-    def float(self, key: string, default_value: float | int | None = None) -> float | None:
+    def float(
+        self,
+        key: str,
+        default_value: Union[float, int, None] = None
+    ) -> Union[float, None]:
         """
         Gets a float value from the data.
 
@@ -193,7 +202,11 @@ class FileController(ABC):
 
         return None
 
-    def int(self, key: string, default_value: int | None = None) -> int | None:
+    def int(
+        self,
+        key: str,
+        default_value: Union[int, None] = None
+    ) -> Union[int, None]:
         """
         Gets an integer value from the data.
 
@@ -233,7 +246,11 @@ class FileController(ABC):
 
         return None
 
-    def boolean(self, key: string, default_value: bool | None = None) -> bool | None:
+    def boolean(
+        self,
+        key: str,
+        default_value: Union[bool, None] = None
+    ) -> Union[bool, None]:
         """
         Gets a boolean value from the data.
 
@@ -266,8 +283,11 @@ class FileController(ABC):
 
         return string.lower() == "true"
 
-    def str_list(self, key: string,
-                 default_value: list[string] | None = None) -> list[string] | None:
+    def str_list(
+        self,
+        key: str,
+        default_value: Union[list[str], None] = None
+    ) -> Union[list[str], None]:
         """
         Gets a list of strings from the data.
 
@@ -304,8 +324,11 @@ class FileController(ABC):
 
         return None
 
-    def float_list(self, key: str,
-                   default_value: list[float | int] | None = None) -> list[float] | None:
+    def float_list(
+        self,
+        key: str,
+        default_value: Union[list[Union[float, int]], None] = None
+    ) -> Union[list[float], None]:
         """
         Gets a list of floats from the data.
 
@@ -327,7 +350,7 @@ class FileController(ABC):
         TypeError
             If `key` is not a string or `default_value` is not a list of numbers.
         """
-        if not self.__validate_key_and_default(key, default_value, list[float | int]):
+        if not self.__validate_key_and_default(key, default_value, list[Union[float, int]]):
             raise TypeError(
                 "Key must be a non-empty string, and default_value must be a list of numbers.")
 
@@ -358,8 +381,11 @@ class FileController(ABC):
 
         return None
 
-    def int_list(self, key: string,
-                 default_value: list[int | float] | None = None) -> list[int] | None:
+    def int_list(
+        self,
+        key: str,
+        default_value: Union[list[Union[int, float]], None] = None
+    ) -> Union[list[int], None]:
         """
         Retrieves a list of integers from the data.
 
@@ -384,7 +410,7 @@ class FileController(ABC):
         TypeError
             If `key` is not a string or `default_value` is not a list.
         """
-        if not self.__validate_key_and_default(key, default_value, list[int | float]):
+        if not self.__validate_key_and_default(key, default_value, list[Union[int, float]]):
             raise TypeError(
                 "Key must be a non-empty string, and default_value must be a list of numbers.")
 
@@ -414,7 +440,11 @@ class FileController(ABC):
 
         return None
 
-    def bool_list(self, key: string, default_value: list[bool] | None = None) -> list[bool] | None:
+    def bool_list(
+        self,
+        key: str,
+        default_value: Union[list[bool], None] = None
+    ) -> Union[list[bool], None]:
         """
         Retrieves a list of booleans from the data.
 
@@ -464,7 +494,11 @@ class FileController(ABC):
 
         return None
 
-    def dictionary(self, key: string, default_value: dict | None = None) -> dict | None:
+    def dictionary(
+        self,
+        key: str,
+        default_value: Union[dict, None] = None
+    ) -> Union[dict, None]:
         """
         Retrieves a dictionary from the data.
 
@@ -504,9 +538,12 @@ class FileController(ABC):
 
         return None
 
-    def __validate_key_and_default(self, key: string,
-                                   default_value: any,
-                                   expected_type: type | tuple[type, type]) -> bool:
+    def __validate_key_and_default(
+        self,
+        key: str,
+        default_value: any,
+        expected_type: Union[type, tuple[type, type]]
+    ) -> bool:
         """
         Validates the key and default value.
 
@@ -527,7 +564,11 @@ class FileController(ABC):
         return (isinstance(key, str) and len(key) > 0 and
                 (isinstance(default_value, expected_type) or default_value is None))
 
-    def __generete_new_tree(self, parent: list, value: any) -> dict:
+    def __generete_new_tree(
+        self,
+        parent: list,
+        value: any
+    ) -> dict:
         """
         Creates a new configuration tree structure.
 
@@ -558,7 +599,12 @@ class FileController(ABC):
 
         return new_dict
 
-    def __update_dict(self, tree: list, dictionary: dict, value: any) -> dict:
+    def __update_dict(
+        self,
+        tree: list,
+        dictionary: dict,
+        value: any
+    ) -> dict:
         """
         Processes setting values in the configuration tree.
 
@@ -587,7 +633,12 @@ class FileController(ABC):
 
         return dictionary
 
-    def __update_existing_key(self, tree: list, dictionary: dict, value: any) -> any:
+    def __update_existing_key(
+        self,
+        tree: list,
+        dictionary: dict,
+        value: any
+    ) -> any:
         """
         Updates the value for an existing key in the configuration tree.
 
@@ -624,7 +675,11 @@ class FileController(ABC):
 
         return dictionary[tree[0]]
 
-    def __create_new_key(self, tree: list, value: any) -> any:
+    def __create_new_key(
+        self,
+        tree: list,
+        value: any
+    ) -> any:
         """
         Creates a new key in the configuration tree with the provided value.
 
@@ -648,9 +703,12 @@ class FileController(ABC):
 
         return self.__generete_new_tree(tree[1:], value)
 
-    def __handle_get(self, tree: list[string],
-                     dictionary: dict,
-                     default_value: any | None) -> any | None:
+    def __handle_get(
+        self,
+        tree: list[str],
+        dictionary: dict,
+        default_value: Union[any, None]
+    ) -> Union[any, None]:
         """
         Internal method to process getting values from the configuration.
 

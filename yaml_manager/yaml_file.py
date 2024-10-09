@@ -11,7 +11,7 @@ from pathlib import Path
 import os
 import yaml
 
-from .file_controller import FileController
+from yaml_manager.file_controller import FileController
 
 
 class YAMLFile(FileController):
@@ -29,7 +29,7 @@ class YAMLFile(FileController):
         A dictionary containing the data loaded from the YAML file.
     """
 
-    __version__ = "1.2.3"
+    __version__ = "1.2.4"
 
     def reload(self) -> None:
         """
